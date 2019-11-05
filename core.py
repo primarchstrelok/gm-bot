@@ -9,6 +9,10 @@ import json
 from discord import Game
 from discord.ext import commands
 
+#grab token from config
+config = open(r"cfg.txt","w+")
+config.close()
+
 #discord app token
 TOKEN = ''
 

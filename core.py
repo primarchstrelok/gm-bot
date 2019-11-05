@@ -10,7 +10,11 @@ from discord import Game
 from discord.ext import commands
 
 #discord app token
-TOKEN = ''
+#grab token from config
+config = open(r"config.txt","r")
+configtext = config.read()
+TOKEN = configtext
+config.close()
 
 client = commands.Bot(command_prefix = "!")
 

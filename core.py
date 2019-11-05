@@ -13,48 +13,59 @@ from discord.ext import commands
 #grab token from config
 config = open(r"config.txt","r")
 configtext = config.read()
+print(configtext)
 TOKEN = configtext
 config.close()
+
+#read player data from players.txt file
+players = open(r"players.txt","r")
+player1 = players.readline()
+print(player1)
+player2 = players.readline()
+print(player2)
+players.close()
 
 client = commands.Bot(command_prefix = "!")
 
 #status declaration
 STATUS = dict(
-player1={'head': 'healthy', 'torso': 'healthy', 'neck': 'healthy', 'larm': 'healthy', 'rarm': 'healthy', 'lleg': 'healthy', 'rleg': 'healthy'},
-player2={'head': 'healthy', 'torso': 'healthy', 'neck': 'healthy', 'larm': 'healthy', 'rarm': 'healthy', 'lleg': 'healthy', 'rleg': 'healthy'},
+player1={'gold': 1337, 'head': 'healthy', 'torso': 'healthy', 'neck': 'healthy', 'larm': 'healthy', 'rarm': 'healthy', 'lleg': 'healthy', 'rleg': 'healthy'},
+player2={'gold': 9001, 'head': 'healthy', 'torso': 'healthy', 'neck': 'healthy', 'larm': 'healthy', 'rarm': 'healthy', 'lleg': 'healthy', 'rleg': 'healthy'},
 )
+
+print(STATUS['player1']['gold'])
 
 @client.event
 async def on_ready():
-    await client.change_presence(game=Game(name="with humans"))
+    await client.change_presence(activity=Game(name="with humans"))
     print('---------------')
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
     print('---------------')
 
-#@client.command(pass_context=True)
-#async def help(ctx):
-#    helpinfo = open(r"help.txt","r")
-#    await client.say(helpinfo)
-
 @client.command(pass_context=True)
 async def hello(ctx):
-    await client.say("Hello {}".format(ctx.message.author.mention))
+    await ctx.send("Hello {}".format(ctx.message.author.mention))
 
 @client.command(pass_context=True)
 async def nani(ctx):
-    await client.say("The Fuck? {}".format(ctx.message.author.mention))
+    await ctx.send("The Fuck? {}".format(ctx.message.author.mention))
 
 @client.command(pass_context=True)
-async def gold(ctx):
+async def gold(ctx, arg1):
     target = ctx.message.content[len('!gold '):]
-    if target == '':
-        gold = 1337
-    elif target == '':
-        gold = 9001
-    goldoutput = target + ' has ' + str(gold) + ' Gold'
-    await client.send_message(ctx.message.channel, goldoutput)
+    gold = 0
+    try:
+        gold = STATUS[arg1]['gold']
+        goldoutput = arg1 + ' has ' + str(gold) + ' Gold'
+        await ctx.send(goldoutput)
+    except:
+        await ctx.send('Error: Specified player does not exist')
+
+@client.command(pass_context=True)
+async def test(ctx, *args):
+    await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
 
 #Mutiple bodypart injury tracking
 #Set Status
@@ -133,10 +144,10 @@ async def top(ctx):
         data = json.loads(data)
         loop = 0
         preface = "These are the hottest posts from r/" + subred
-        await client.send_message(ctx.message.channel, "**" + preface + "**")
+        await ctx.send("**" + preface + "**")
         for sub in (tsub["data"] for tsub in data["data"]["children"]):
             output =  ("{0}\n - {1} ({2}|{3})".format(sub["title"], sub["score"], sub["ups"], sub["downs"]))
-            await client.send_message(ctx.message.channel, output)
+            await ctx.send(output)
             loop += 1
             if loop >= 5:
                 return
